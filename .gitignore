@@ -1,2 +1,4 @@
 dist/
+build/
+procboy.egg-info/
 *.pyc
