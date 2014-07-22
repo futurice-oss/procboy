@@ -9,14 +9,17 @@ def manager():
     print("Setting environment variables ({0}):".format('.env'))
     # TODO: default environment variables
     os.environ.setdefault('PYTHONUNBUFFERED', 'True')
-    for name,command in ini.commands.items():
-        if not os.environ.get(name):
-            print(' ',name,'=',' '.join(command))
-            os.environ.setdefault(name, ' '.join(command))
+    if hasattr(ini, 'commands'):
+        for name,command in ini.commands.items():
+            if not os.environ.get(name):
+                print(' ',name,'=',' '.join(command))
+                os.environ.setdefault(name, ' '.join(command))
     for signame in ('SIGINT', 'SIGTERM'):
         loop.add_signal_handler(getattr(signal, signame), functools.partial(ask_exit, signame))
     try:
         pf = Procfile('./Procfile')
+        if not hasattr(pf, 'commands'):
+            return
         max_name_len = max([len(name) for name,command in pf.commands.items()])
         for name,command in pf.commands.items():
             print("Starting {0}: {1}".format(name, ' '.join(command)))

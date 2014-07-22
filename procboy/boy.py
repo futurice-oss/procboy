@@ -14,8 +14,12 @@ import subprocess
 class ConfigParser(object):
     def __init__(self, filename=None):
         filename = filename or self.DEFAULT_FILE
-        with open(filename) as f:
-            self.read(f.read().strip())
+        if os.path.isfile(filename):
+            with open(filename) as f:
+                self.read(f.read().strip())
+        else:
+            print("File ({0}) not found, ignored.".format(filename))
+
     def read(self, contents):
         self.commands = OrderedDict()
         for line in contents.splitlines():
