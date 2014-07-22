@@ -28,7 +28,7 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 
 setup(
     name = "procboy",
-    version = "0.0.1",
+    version = "0.0.2",
     description = "ProcBoy - Manage processes",
     url = "http://github.com/futurice-oss/procboy",
     author = "Jussi Vaihia",
