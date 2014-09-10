@@ -28,7 +28,7 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 
 setup(
     name = "procboy",
-    version = "0.0.3",
+    version = "0.0.4",
     description = "ProcBoy - Manage processes",
     url = "http://github.com/futurice-oss/procboy",
     author = "Jussi Vaihia",
@@ -37,7 +37,7 @@ setup(
     include_package_data = True,
     keywords = 'process procboy processboy',
     license = 'BSD',
-    install_requires = [],
+    install_requires = ["six"],
     entry_points={
         'console_scripts': [
             'procboy = procboy.utils.runner:main',

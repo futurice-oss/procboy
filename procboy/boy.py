@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import asyncio
 import os, sys
 import shlex
 from collections import OrderedDict
@@ -10,6 +9,13 @@ import signal
 import functools
 import datetime
 import subprocess
+import platform
+import six
+
+if platform.python_version()[0]=='2':
+    import trollius as asyncio
+else:
+    import asyncio
 
 class ConfigParser(object):
     def __init__(self, filename=None):
@@ -94,7 +100,7 @@ def get_meta(extra):
 
 PIDS = []# added from Subprocess (better way?); @TODO {Procfile-name: PID}
 def get_protocol(name):
-    class Subprocess(asyncio.SubprocessProtocol, metaclass=get_meta(name)):
+    class Subprocess(asyncio.SubprocessProtocol, six.with_metaclass(get_meta(name))):
         """ fd: 0 IN, 1 OUT, 2 ERR """
         def __init__(self, *args, **kwargs):
             self.fm_name = self.extra.get('name')
