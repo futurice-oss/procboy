@@ -26,18 +26,22 @@ class InstallCommand(install):
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
+install_requires = ["six"]
+if sys.version_info.major == 2:
+    install_requires.append('trollius')
+
 setup(
     name = "procboy",
-    version = "0.0.4",
+    version = "0.0.5",
     description = "ProcBoy - Manage processes",
-    url = "http://github.com/futurice-oss/procboy",
+    url = "http://github.com/futurice/procboy",
     author = "Jussi Vaihia",
     author_email = "jussi.vaihia@futurice.com",
     packages = ["procboy"],
     include_package_data = True,
     keywords = 'process procboy processboy',
     license = 'BSD',
-    install_requires = ["six"],
+    install_requires = install_requires,
     entry_points={
         'console_scripts': [
             'procboy = procboy.utils.runner:main',
