@@ -17,6 +17,10 @@ def manager():
     for signame in ('SIGINT', 'SIGTERM'):
         loop.add_signal_handler(getattr(signal, signame), functools.partial(ask_exit, signame))
     try:
+        pfs = ProcfileStartup('./Procfile')
+        for name,command in pfs.commands.items():
+            subprocess.call(command)
+
         pf = Procfile('./Procfile')
         if not hasattr(pf, 'commands'):
             return
@@ -53,6 +57,10 @@ def manager():
                 os.kill(pid, signal.SIGQUIT)
             except Exception as e:
                 pass
+
+        pfe = ProcfileEnd('./Procfile')
+        for name,command in pfe.commands.items():
+            subprocess.call(command)
 
 def main():
     manager()

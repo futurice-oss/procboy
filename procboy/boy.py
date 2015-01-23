@@ -36,7 +36,15 @@ class ConfigParser(object):
 
 class Procfile(ConfigParser):
     DEFAULT_FILE = './Procfile'
-    LINE = re.compile(r'^([^\>]\w.+?):\s*(.+)$')
+    LINE = re.compile(r'^([^\>!#]\w.+?):\s*(.+)$')
+
+class ProcfileStartup(ConfigParser):
+    DEFAULT_FILE = './Procfile'
+    LINE = re.compile(r'^(\>\w.+?):\s*(.+)$')
+
+class ProcfileEnd(ConfigParser):
+    DEFAULT_FILE = './Procfile'
+    LINE = re.compile(r'^(!\w.+?):\s*(.+)$')
 
 class Inifile(ConfigParser):
     DEFAULT_FILE = './.env'
