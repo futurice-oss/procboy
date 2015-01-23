@@ -36,7 +36,7 @@ class ConfigParser(object):
 
 class Procfile(ConfigParser):
     DEFAULT_FILE = './Procfile'
-    LINE = re.compile(r'^(\w.+?):\s*(.+)$')
+    LINE = re.compile(r'^([^\>]\w.+?):\s*(.+)$')
 
 class Inifile(ConfigParser):
     DEFAULT_FILE = './.env'
@@ -120,6 +120,12 @@ def get_protocol(name):
                 msg = line.rstrip("\n")
                 if msg:
                     self.logline(msg)
+
+        def pipe_connection_lost(self, fd, exc):
+            self.connection_lost(exc)
+
+        def process_exited(self):
+            self.connection_lost({})
 
         def logline(self, msg):
             timenow = datetime.datetime.now().strftime('%H:%m:%S')
