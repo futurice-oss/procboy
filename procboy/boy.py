@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import os, sys
 import shlex
 from collections import OrderedDict
@@ -46,9 +45,31 @@ class ProcfileEnd(ConfigParser):
     DEFAULT_FILE = './Procfile'
     LINE = re.compile(r'^(!\w.+?):\s*(.+)$')
 
-class Inifile(ConfigParser):
+class Environ(ConfigParser):
+    def run(self):
+        if hasattr(self, 'commands'):
+            for name,command in self.commands.items():
+                cmd_str = ' '.join(command)
+                if os.environ.get(name, '') != command:
+                    if self.ACTION == 'overwrite':
+                        os.environ[name] = cmd_str
+                    elif self.ACTION == 'prepend':
+                        if cmd_str in os.environ[name]:
+                            continue
+                        os.environ[name] = '{}:{}'.format(cmd_str, os.environ[name])
+                        if name == 'PYTHONPATH':
+                            for c in cmd_str.split(':'):
+                                sys.path.insert(0, c)
+
+class Inifile(Environ):
     DEFAULT_FILE = './.env'
     LINE = re.compile(r'^(\w.+?)=\s*(.+)$')
+    ACTION = 'overwrite'
+
+class InifilePrepend(Environ):
+    DEFAULT_FILE = './.env'
+    LINE = re.compile(r'^\+(\w.+?)=\s*(.+)$')
+    ACTION = 'prepend'
 
 BGCOLORS = OrderedDict(
     green='\033[32m',

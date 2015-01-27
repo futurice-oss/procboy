@@ -5,15 +5,13 @@ def manager():
     processes = []
     CHILDREN = []
     loop = asyncio.get_event_loop()
+    inip = InifilePrepend('./.env')
+    inip.run()
     ini = Inifile('./.env')
     print("Setting environment variables from: {0}:".format('.env'))
     # TODO: default environment variables
     os.environ.setdefault('PYTHONUNBUFFERED', 'True')
-    if hasattr(ini, 'commands'):
-        for name,command in ini.commands.items():
-            if os.environ.get(name, '') != command:
-                print(' {}={}'.format(name,' '.join(command)))
-                os.environ[name] = ' '.join(command)
+    ini.run()
     for signame in ('SIGINT', 'SIGTERM'):
         loop.add_signal_handler(getattr(signal, signame), functools.partial(ask_exit, signame))
     try:
