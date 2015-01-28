@@ -37,11 +37,18 @@ class Procfile(ConfigParser):
     DEFAULT_FILE = './Procfile'
     LINE = re.compile(r'^([^\>!#]\w.+?):\s*(.+)$')
 
-class ProcfileStartup(ConfigParser):
+class Synchronous(ConfigParser):
+    def run(self):
+        if not hasattr(self, 'commands'):
+            return
+        for name,command in self.commands.items():
+            subprocess.call(command)
+
+class ProcfileStartup(Synchronous):
     DEFAULT_FILE = './Procfile'
     LINE = re.compile(r'^(\>\w.+?):\s*(.+)$')
 
-class ProcfileEnd(ConfigParser):
+class ProcfileEnd(Synchronous):
     DEFAULT_FILE = './Procfile'
     LINE = re.compile(r'^(!\w.+?):\s*(.+)$')
 
@@ -63,7 +70,7 @@ class Environ(ConfigParser):
 
 class Inifile(Environ):
     DEFAULT_FILE = './.env'
-    LINE = re.compile(r'^(\w.+?)=\s*(.+)$')
+    LINE = re.compile(r'^([^#]\w.+?)=\s*(.+)$')
     ACTION = 'overwrite'
 
 class InifilePrepend(Environ):
@@ -125,6 +132,26 @@ def get_meta(extra):
             instance.extra = extra
             return instance
     return ClassMeta
+
+
+import itertools
+def first(seq, pred=lambda x: x()):
+    try:
+        return next(itertools.ifilter(pred, seq))
+    except StopIteration:
+        return None
+
+def get_procfile(f=None):
+    check = [lambda: f,
+            lambda: os.environ.get('PROCFILE', None),
+            lambda: 'Procfile']
+    return first(check)()
+
+def get_procfile_env(e=None):
+    check = [lambda: e,
+            lambda: os.environ.get('PROCENV', None),
+            lambda: '.env']
+    return first(check)()
 
 
 PIDS = []# added from Subprocess (better way?); @TODO {Procfile-name: PID}

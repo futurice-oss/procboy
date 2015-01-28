@@ -1,25 +1,29 @@
 #!/usr/bin/env python
+import argparse
 from procboy.boy import *
 
-def manager():
+def manager(e=None, f=None):
     processes = []
     CHILDREN = []
     loop = asyncio.get_event_loop()
-    inip = InifilePrepend('./.env')
+
+    procfile = get_procfile(f=f)
+    procenv = get_procfile_env(e=e)
+
+    print("Setting environment variables from: {0}:".format(procenv))
+    inip = InifilePrepend('./{}'.format(procenv))
     inip.run()
-    ini = Inifile('./.env')
-    print("Setting environment variables from: {0}:".format('.env'))
+    ini = Inifile('./{}'.format(procenv))
     # TODO: default environment variables
     os.environ.setdefault('PYTHONUNBUFFERED', 'True')
     ini.run()
     for signame in ('SIGINT', 'SIGTERM'):
         loop.add_signal_handler(getattr(signal, signame), functools.partial(ask_exit, signame))
     try:
-        pfs = ProcfileStartup('./Procfile')
-        for name,command in pfs.commands.items():
-            subprocess.call(command)
+        pfs = ProcfileStartup('./{}'.format(procfile))
+        pfs.run()
 
-        pf = Procfile('./Procfile')
+        pf = Procfile('./{}'.format(procfile))
         if not hasattr(pf, 'commands'):
             return
         max_name_len = max([len(name) for name,command in pf.commands.items()])
@@ -56,12 +60,17 @@ def manager():
             except Exception as e:
                 pass
 
-        pfe = ProcfileEnd('./Procfile')
-        for name,command in pfe.commands.items():
-            subprocess.call(command)
+        pfe = ProcfileEnd('./{}'.format(procfile))
+        pfe.run()
 
-def main():
-    manager()
+def main(e=None, f=None):
+    manager(e=e, f=f)
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description='procboy')
+    parser.add_argument('-e', help='procenv', required=False)
+    parser.add_argument('-f', help='procfile', required=False)
+    args = parser.parse_args()
+    print args
+    main(e=args.e if args else None,
+            f=args.f if args else None,)
