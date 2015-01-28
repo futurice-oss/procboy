@@ -133,11 +133,14 @@ def get_meta(extra):
             return instance
     return ClassMeta
 
+try:
+    from itertools import ifilter
+except Exception:
+    ifilter = filter # py3
 
-import itertools
 def first(seq, pred=lambda x: x()):
     try:
-        return next(itertools.ifilter(pred, seq))
+        return next(ifilter(pred, seq))
     except StopIteration:
         return None
 

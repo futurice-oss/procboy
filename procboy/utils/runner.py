@@ -71,6 +71,5 @@ if __name__ == '__main__':
     parser.add_argument('-e', help='procenv', required=False)
     parser.add_argument('-f', help='procfile', required=False)
     args = parser.parse_args()
-    print args
     main(e=args.e if args else None,
             f=args.f if args else None,)
