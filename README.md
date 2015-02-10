@@ -28,3 +28,8 @@ Then, run it all.
 ```
 $ procboy
 ```
+
+Similar
+=======
+
+- [honcho](https://honcho.readthedocs.org/en/latest/)
