@@ -18,6 +18,7 @@ else:
 
 class ConfigParser(object):
     def __init__(self, filename=None):
+        self.log = []
         filename = filename or self.DEFAULT_FILE
         if os.path.isfile(filename):
             with open(filename) as f:
@@ -32,6 +33,10 @@ class ConfigParser(object):
             if m:
                 cmd = os.path.expandvars(m.group(2))
                 self.commands[m.group(1)] = shlex.split(cmd)
+
+    def debug(self):
+        for k,v in self.log:
+            print('{}={}'.format(k,v))
 
 class Procfile(ConfigParser):
     DEFAULT_FILE = './Procfile'
@@ -60,10 +65,12 @@ class Environ(ConfigParser):
                 if os.environ.get(name, '') != command:
                     if self.ACTION == 'overwrite':
                         os.environ[name] = cmd_str
+                        self.log.append((name, cmd_str))
                     elif self.ACTION == 'prepend':
                         if cmd_str in os.environ[name]:
                             continue
                         os.environ[name] = '{}:{}'.format(cmd_str, os.environ[name])
+                        self.log.append((name, cmd_str))
                         if name == 'PYTHONPATH':
                             for c in cmd_str.split(':'):
                                 sys.path.insert(0, c)

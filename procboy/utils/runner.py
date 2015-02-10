@@ -13,10 +13,11 @@ def manager(e=None, f=None):
     print("Setting environment variables from: {0}:".format(procenv))
     inip = InifilePrepend('./{}'.format(procenv))
     inip.run()
-    ini = Inifile('./{}'.format(procenv))
-    # TODO: default environment variables
+    inip.debug()
     os.environ.setdefault('PYTHONUNBUFFERED', 'True')
+    ini = Inifile('./{}'.format(procenv))
     ini.run()
+    ini.debug()
     for signame in ('SIGINT', 'SIGTERM'):
         loop.add_signal_handler(getattr(signal, signame), functools.partial(ask_exit, signame))
     try:

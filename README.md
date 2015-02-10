@@ -1,11 +1,7 @@
 Process Boy
 ===========
 
-A process manager inspired by Procfile-based Foreman.
-Aims to make it a breeze to run multiple processes on the background
-for development.
-
-Requires Python 3.4+
+A process manager to help run development enviroments with ease.
 
 Running
 =======
@@ -27,4 +23,10 @@ Then, run it all.
 
 ```
 $ procboy
+```
+
+For custom environment and processes, use local files:
+
+```
+$ procboy -e .env.dev -f Procfile.dev
 ```

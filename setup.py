@@ -32,7 +32,7 @@ if sys.version_info.major == 2:
 
 setup(
     name = "procboy",
-    version = "0.1.3",
+    version = "0.1.4",
     description = "ProcBoy - Manage processes",
     url = "http://github.com/futurice/procboy",
     author = "Jussi Vaihia",
