@@ -30,3 +30,8 @@ For custom environment and processes, use local files:
 ```
 $ procboy -e .env.dev -f Procfile.dev
 ```
+
+Similar
+=======
+
+- [honcho](https://honcho.readthedocs.org/en/latest/)
