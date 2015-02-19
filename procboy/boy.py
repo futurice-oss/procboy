@@ -26,13 +26,16 @@ class ConfigParser(object):
         else:
             print("File ({0}) not found, ignored.".format(filename))
 
+    def expand_variables(self, command):
+        return os.path.expandvars(command)
+
     def read(self, contents):
         self.commands = OrderedDict()
         for line in contents.splitlines():
             m = self.LINE.match(line)
             if m:
                 cmd = os.path.expandvars(m.group(2))
-                self.commands[m.group(1)] = shlex.split(cmd)
+                self.commands[m.group(1)] = self.expand_variables(shlex.split(cmd))
 
     def debug(self):
         for k,v in self.log:
