@@ -1,5 +1,6 @@
 dist/
 build/
 env/
-procboy.egg-info/
+*.egg-info/
 *.pyc
+tags

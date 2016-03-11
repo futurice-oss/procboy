@@ -11,25 +11,25 @@ def manager(e=None, f=None):
     procenv = get_procfile_env(e=e)
 
     print("Setting environment variables from: {0}:".format(procenv))
-    inip = InifilePrepend('./{}'.format(procenv))
+    inip = InifilePrepend(procenv)
     inip.run()
     inip.debug()
     os.environ.setdefault('PYTHONUNBUFFERED', 'True')
-    ini = Inifile('./{}'.format(procenv))
+    ini = Inifile(procenv)
     ini.run()
     ini.debug()
     for signame in ('SIGINT', 'SIGTERM'):
         loop.add_signal_handler(getattr(signal, signame), functools.partial(ask_exit, signame))
     try:
-        pfs = ProcfileStartup('./{}'.format(procfile))
+        pfs = ProcfileStartup(procfile)
         pfs.run()
 
-        pf = Procfile('./{}'.format(procfile))
+        pf = Procfile(procfile)
         if not hasattr(pf, 'commands'):
             return
         max_name_len = max([len(name) for name,command in pf.commands.items()])
         for name,command in pf.commands.items():
-            print("Starting {}: {}".format(name, ' '.join(command)))
+            print("Starting: {}: {}".format(name, ' '.join(command)))
             data = dict(name=name,
                     color=get_random_color(),
                     max_name_len=max_name_len,)
@@ -45,24 +45,25 @@ def manager(e=None, f=None):
             if proc:
                 CHILDREN += proc.child_pids()
         for name, proc in processes:
-            print("Closing",name)
+            print("Closing: %s"%name)
             result = proc.close()
+
+        forcekill(PIDS + CHILDREN)
+
         if loop.is_running():
             loop.stop()
         loop.close()
-        """ ensure no zombie processes left due eg. remote pdb sessions """
-        for pid in PIDS + CHILDREN:
-            try:
-                os.killpg(pid, signal.SIGTERM)
-            except Exception as e:
-                pass
-            try:
-                os.kill(pid, signal.SIGQUIT)
-            except Exception as e:
-                pass
 
-        pfe = ProcfileEnd('./{}'.format(procfile))
+        pfe = ProcfileEnd(procfile)
         pfe.run()
+
+def forcekill(pids):
+    """ Really kill the processes.
+    Ensure no zombie processes left due eg. remote pdb sessions , or startup errors.
+    """
+    for pid in pids:
+        os.system("kill -TERM -- %s"%pid) # process group
+        os.system("kill -TERM %s"%pid)    # process
 
 def main(e=None, f=None):
     parser = argparse.ArgumentParser(description='procboy')
